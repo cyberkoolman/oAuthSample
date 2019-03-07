@@ -42,5 +42,11 @@ namespace OktaAspNetExample.Controllers
         {
             return View(HttpContext.GetOwinContext().Authentication.User.Claims);
         }
+
+        [Authorize(Roles = "Enthusiasts")]
+        public ActionResult Enthusiast() => View();
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult Admin() => View();
     }
 }

@@ -1,16 +1,17 @@
-﻿using Microsoft.Owin;
-using Owin;
+﻿using IdentityModel.Client;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
-using System.Threading.Tasks;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Owin;
+using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Security.Claims;
-using IdentityModel.Client;
-using System;
-using System.Collections.Generic;
-using Microsoft.IdentityModel.Tokens;
+using System.Threading.Tasks;
 
 [assembly: OwinStartup(typeof(OktaAspNetExample.Startup))]
 
@@ -75,6 +76,12 @@ namespace OktaAspNetExample
                         }
 
                         n.AuthenticationTicket.Identity.AddClaims(claims);
+
+                        // Map the OpenID Connect Groups to Roles
+                        foreach (var group in userInfoResponse.Claims.Where(x => x.Type == "groups"))
+                        {
+                            n.AuthenticationTicket.Identity.AddClaim(new Claim(ClaimTypes.Role, group.Value));
+                        }
 
                         return;
                     },
